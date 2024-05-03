@@ -9,8 +9,9 @@ import org.redisson.config.Config;
 public class RedisAccess {
 
     private static final int REDIS_THREADS = 4;
-    private static final int CONNECTION_POOL_SIZE = 5;
+    private static final int CONNECTION_POOL_SIZE = 10;
     private static final int DATABASE_NUMBER = 1;
+    private static final int CONNECTION_MINIMUM_IDLE_SIZE = 1;
     private static RedisAccess singletonInstance;
     private RedissonClient redissonClient;
 
@@ -36,6 +37,7 @@ public class RedisAccess {
                 .setAddress(credentials.toURI())
                 .setPassword(credentials.getPassword())
                 .setDatabase(DATABASE_NUMBER)
+                .setConnectionMinimumIdleSize(CONNECTION_MINIMUM_IDLE_SIZE)
                 .setClientName(credentials.getClient());
         return createRedissonClient(config);
     }

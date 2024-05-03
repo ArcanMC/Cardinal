@@ -2,6 +2,7 @@ package fr.arcanmc.cardinal.module;
 
 
 import fr.arcanmc.cardinal.Cardinal;
+import fr.arcanmc.cardinal.file.FileConfiguration;
 
 import java.io.File;
 
@@ -9,13 +10,13 @@ public class CardinalModule {
 
     private String name;
     private File dataFolder;
-    private CardinalInfo info;
+    private ModuleInfo info;
     private File pluginJar;
 
     protected final void setInfo(FileConfiguration file, File pluginJar) {
-        this.info = new PluginInfo(file);
+        this.info = new ModuleInfo(file);
         this.name = info.getName();
-        this.dataFolder = new File(Limbo.getInstance().getPluginFolder(), name);
+        this.dataFolder = new File(Cardinal.getInstance().getModuleDirectory(), name);
         this.pluginJar = pluginJar;
     }
 
@@ -43,7 +44,7 @@ public class CardinalModule {
         return new File(dataFolder.getAbsolutePath());
     }
 
-    public final PluginInfo getInfo() {
+    public final ModuleInfo getInfo() {
         return info;
     }
 

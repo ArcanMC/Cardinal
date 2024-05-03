@@ -24,6 +24,29 @@ public class CustomStringUtils {
         return position < words.size() ? words.get(position).length() : -1;
     }
 
+    public static String[] splitStringToArgs(String str) {
+        List<String> tokens = new ArrayList<String>();
+        StringBuilder sb = new StringBuilder();
+
+        boolean insideQuote = false;
+
+        for (char c : str.toCharArray()) {
+            if (c == '"') {
+                insideQuote = !insideQuote;
+            } else if (c == ' ' && !insideQuote) {
+                if (sb.length() > 0) {
+                    tokens.add(sb.toString());
+                }
+                sb.delete(0, sb.length());
+            } else {
+                sb.append(c);
+            }
+        }
+        tokens.add(sb.toString());
+
+        return tokens.toArray(new String[tokens.size()]);
+    }
+
     private static List<String> splitIntoWords(String str) {
         List<String> words = new ArrayList<>();
         StringBuilder sb = new StringBuilder();

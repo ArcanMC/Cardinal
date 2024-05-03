@@ -1,15 +1,16 @@
 package fr.arcanmc.cardinal.module;
 
+import fr.arcanmc.cardinal.file.FileConfiguration;
 import lombok.Getter;
 
 @Getter
 public class ModuleInfo {
 
-    private String name;
-    private String description;
-    private String author;
-    private String version;
-    private String main;
+    private final String name;
+    private final String description;
+    private final String author;
+    private final String version;
+    private final String main;
 
     public ModuleInfo(FileConfiguration file) {
         name = file.get("name", String.class);

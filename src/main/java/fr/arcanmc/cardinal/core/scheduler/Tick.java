@@ -55,7 +55,7 @@ public class Tick {
             long start = System.currentTimeMillis();
             tick.incrementAndGet();
 
-            CardinalScheduler.CurrentSchedulerTask tasks = instance.getScheduler().collectTasks(getCurrentTick());
+            CardinalScheduler.CurrentSchedulerTask tasks = instance.getCardinalScheduler().collectTasks(getCurrentTick());
             if (tasks != null) {
                 asyncTasksQueue.addAll(tasks.getAsyncTasks());
                 tasks.getSyncedTasks().forEach(this::executeTask);

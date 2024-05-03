@@ -1,5 +1,6 @@
 package fr.arcanmc.cardinal.utils;
 
+import lombok.Getter;
 import org.yaml.snakeyaml.error.YAMLException;
 import org.yaml.snakeyaml.introspector.BeanAccess;
 import org.yaml.snakeyaml.introspector.FieldProperty;
@@ -16,22 +17,19 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class YamlOrder extends PropertyUtils {
 
     private final Map<Class<?>, Map<String, Property>> propertiesCache = new HashMap<Class<?>, Map<String, Property>>();
     private final Map<Class<?>, Set<Property>> readableProperties = new HashMap<Class<?>, Set<Property>>();
     private BeanAccess beanAccess = BeanAccess.DEFAULT;
+    @Getter
     private boolean allowReadOnlyProperties = false;
+    @Getter
     private boolean skipMissingProperties = false;
 
-    private PlatformFeatureDetector platformFeatureDetector;
+    private final PlatformFeatureDetector platformFeatureDetector;
 
     public YamlOrder() {
         this(new PlatformFeatureDetector());
@@ -52,45 +50,42 @@ public class YamlOrder extends PropertyUtils {
 
         Map<String, Property> properties = new LinkedHashMap<String, Property>();
         boolean inaccessableFieldsExist = false;
-        switch (bAccess) {
-            case FIELD:
-                for (Class<?> c = type; c != null; c = c.getSuperclass()) {
-                    for (Field field : c.getDeclaredFields()) {
-                        int modifiers = field.getModifiers();
-                        if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers)
-                                && !properties.containsKey(field.getName())) {
-                            properties.put(field.getName(), new FieldProperty(field));
-                        }
+        if (Objects.requireNonNull(bAccess) == BeanAccess.FIELD) {
+            for (Class<?> c = type; c != null; c = c.getSuperclass()) {
+                for (Field field : c.getDeclaredFields()) {
+                    int modifiers = field.getModifiers();
+                    if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers)
+                            && !properties.containsKey(field.getName())) {
+                        properties.put(field.getName(), new FieldProperty(field));
                     }
                 }
-                break;
-            default:
-                try {
-                    for (PropertyDescriptor property : Introspector.getBeanInfo(type)
-                            .getPropertyDescriptors()) {
-                        Method readMethod = property.getReadMethod();
-                        if ((readMethod == null || !readMethod.getName().equals("getClass"))
-                                && !isTransient(property)) {
-                            properties.put(property.getName(), new MethodProperty(property));
-                        }
+            }
+        } else {
+            try {
+                for (PropertyDescriptor property : Introspector.getBeanInfo(type)
+                        .getPropertyDescriptors()) {
+                    Method readMethod = property.getReadMethod();
+                    if ((readMethod == null || !readMethod.getName().equals("getClass"))
+                            && !isTransient(property)) {
+                        properties.put(property.getName(), new MethodProperty(property));
                     }
-                } catch (IntrospectionException e) {
-                    throw new YAMLException(e);
                 }
+            } catch (IntrospectionException e) {
+                throw new YAMLException(e);
+            }
 
-                for (Class<?> c = type; c != null; c = c.getSuperclass()) {
-                    for (Field field : c.getDeclaredFields()) {
-                        int modifiers = field.getModifiers();
-                        if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers)) {
-                            if (Modifier.isPublic(modifiers)) {
-                                properties.put(field.getName(), new FieldProperty(field));
-                            } else {
-                                inaccessableFieldsExist = true;
-                            }
+            for (Class<?> c = type; c != null; c = c.getSuperclass()) {
+                for (Field field : c.getDeclaredFields()) {
+                    int modifiers = field.getModifiers();
+                    if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers)) {
+                        if (Modifier.isPublic(modifiers)) {
+                            properties.put(field.getName(), new FieldProperty(field));
+                        } else {
+                            inaccessableFieldsExist = true;
                         }
                     }
                 }
-                break;
+            }
         }
         if (properties.isEmpty() && inaccessableFieldsExist) {
             throw new YAMLException("No JavaBean properties found in " + type.getName());
@@ -167,10 +162,6 @@ public class YamlOrder extends PropertyUtils {
         }
     }
 
-    public boolean isAllowReadOnlyProperties() {
-        return allowReadOnlyProperties;
-    }
-
     public void setSkipMissingProperties(boolean skipMissingProperties) {
         if (this.skipMissingProperties != skipMissingProperties) {
             this.skipMissingProperties = skipMissingProperties;
@@ -178,7 +169,4 @@ public class YamlOrder extends PropertyUtils {
         }
     }
 
-    public boolean isSkipMissingProperties() {
-        return skipMissingProperties;
-    }
 }

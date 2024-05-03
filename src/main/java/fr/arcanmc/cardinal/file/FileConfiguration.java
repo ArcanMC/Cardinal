@@ -47,10 +47,6 @@ public class FileConfiguration {
         return this;
     }
 
-    public void setHeader(String header) {
-        this.header = header;
-    }
-
     @SuppressWarnings("unchecked")
     public <T> T get(String key, Class<T> returnType) {
         try {
@@ -102,7 +98,8 @@ public class FileConfiguration {
     }
 
     private Representer createRepresenter() {
-        Representer customRepresenter = new Representer();
+        DumperOptions options = createDumperOptions();
+        Representer customRepresenter = new Representer(options);
         YamlOrder customProperty = new YamlOrder();
         customRepresenter.setPropertyUtils(customProperty);
         return customRepresenter;
@@ -126,8 +123,7 @@ public class FileConfiguration {
         pw.flush();
         pw.close();
 
-        String str = new String(out.toByteArray(), StandardCharsets.UTF_8);
-        return str;
+        return out.toString(StandardCharsets.UTF_8);
     }
 
     public void saveConfig(File file) throws IOException {

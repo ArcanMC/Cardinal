@@ -2,6 +2,7 @@ package fr.arcanmc.cardinal.core.scheduler;
 
 
 import fr.arcanmc.cardinal.Cardinal;
+import lombok.Getter;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -132,6 +133,7 @@ public class CardinalScheduler {
         return new CurrentSchedulerTask(syncedTasks, asyncTasks);
     }
 
+    @Getter
     public static class CurrentSchedulerTask {
 
         private List<CardinalSchedulerTask> asyncTasks;
@@ -140,14 +142,6 @@ public class CardinalScheduler {
         public CurrentSchedulerTask(List<CardinalSchedulerTask> syncedTasks, List<CardinalSchedulerTask> asyncTasks) {
             this.asyncTasks = asyncTasks;
             this.syncedTasks = syncedTasks;
-        }
-
-        public List<CardinalSchedulerTask> getAsyncTasks() {
-            return asyncTasks;
-        }
-
-        public List<CardinalSchedulerTask> getSyncedTasks() {
-            return syncedTasks;
         }
 
     }

@@ -17,28 +17,22 @@ import java.util.Date;
 public class Console {
     private static final String DATE_FORMAT_LOGS = "yyyy'-'MM'-'dd'_'HH'-'mm'-'ss'_'zzz'.log'";
     private static final String DATE_FORMAT_MESSAGES = "HH':'mm':'ss";
-    private static final String CONSOLE = "CONSOLE";
     private static final String PROMPT = "> ";
-    protected static final String ERROR_RED = "\u001B[31;1m";
-    protected static final String RESET_COLOR = "\u001B[0m";
 
-    private Terminal terminal;
-    private LineReader lineReader;
-    private ConsoleReader reader;
-    private InputStream in;
-    private PrintStream out;
-    private PrintStream err;
+    private final LineReader lineReader;
+    private final ConsoleReader reader;
+    private final InputStream in;
     public PrintStream logs;
 
     public Console(InputStream in, PrintStream out, PrintStream err) throws IOException {
         this.logs = setupLogs();
         this.in = setupInput(in);
-        this.out = setupOutput(out);
-        this.err = setupError(err);
+        PrintStream out1 = setupOutput(out);
+        PrintStream err1 = setupError(err);
         reader = new ConsoleReader(in, out);
         reader.setExpandEvents(false);
         reader.setHandleUserInterrupt(false);
-        terminal = TerminalBuilder.builder().streams(in, out).system(true).jansi(true).build();
+        Terminal terminal = TerminalBuilder.builder().system(true).jansi(true).build();
         lineReader = LineReaderBuilder.builder().terminal(terminal).build();
         lineReader.setAutosuggestion(LineReader.SuggestionType.NONE);
     }
@@ -85,7 +79,7 @@ public class Console {
         while (true) {
             try {
                 String command = lineReader.readLine(PROMPT).trim();
-                if (command.length() > 0) {
+                if (!command.isEmpty()) {
                     String[] input = CustomStringUtils.splitStringToArgs(command);
                     new Thread(() -> Cardinal.getInstance().dispatchCommand(input)).start();
                 }
