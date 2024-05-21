@@ -5,15 +5,10 @@ import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
 
 public class ConsoleErrorStream extends PrintStream {
-    private final static String ERROR_FORMAT = "[%s Error]";
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HH':'mm':'ss");
-    private static final String ERROR_RED = "\u001B[31;1m";
-    private static final String RESET_COLOR = "\u001B[0m";
-
+    protected final static String ERROR_RED = "\u001B[31;1m";
+    protected final static String RESET_COLOR = "\u001B[0m";
     private final PrintStream logs;
     private final Console console;
 
@@ -23,53 +18,86 @@ public class ConsoleErrorStream extends PrintStream {
         this.console = console;
     }
 
-    @Override
-    public PrintStream printf(Locale l, String format, Object... args) {
-        return printFormatted((fmt, arguments) -> super.printf(l, fmt, arguments), format, args);
+    private String getErrorTimestamp() {
+        return new SimpleDateFormat("HH':'mm':'ss").format(new Date());
     }
 
-    @Override
-    public PrintStream printf(String format, Object... args) {
-        return printFormatted(super::printf, format, args);
+    private void performLogging(String logMessage, Runnable superCall) {
+        console.stashLine();
+        String date = getErrorTimestamp();
+        logs.println("[" + date + " Error] " + logMessage);
+        superCall.run();
+        console.unstashLine();
     }
 
     @Override
     public void println() {
-        printLog(super::println, "");
+        performLogging("", () -> super.println(ERROR_RED + "[" + getErrorTimestamp() + " Error]" + RESET_COLOR));
     }
 
     @Override
     public void println(boolean x) {
-        printLog(super::println, String.valueOf(x));
+        performLogging(Boolean.toString(x), () -> super.println(ERROR_RED + "[" + getErrorTimestamp() + " Error]" + x + RESET_COLOR));
     }
 
     @Override
     public void println(char x) {
-        printLog(super::println, String.valueOf(x));
+        performLogging(Character.toString(x), () -> super.println(ERROR_RED + "[" + getErrorTimestamp() + " Error]" + x + RESET_COLOR));
     }
 
     @Override
     public void println(char[] x) {
-        printLog(super::println, String.valueOf(x));
+        performLogging(String.valueOf(x), () -> super.println(ERROR_RED + "[" + getErrorTimestamp() + " Error]" + String.valueOf(x) + RESET_COLOR));
     }
 
-    // Similar method overload for double, float, int, long, Object and String
+    @Override
+    public void println(double x) {
+        performLogging(Double.toString(x), () -> super.println(ERROR_RED + "[" + getErrorTimestamp() + " Error]" + x + RESET_COLOR));
+    }
 
-    private PrintStream printFormatted(BiFunction<String, Object[], PrintStream> printOperation, String format, Object... args) {
+    @Override
+    public void println(float x) {
+        performLogging(Float.toString(x), () -> super.println(ERROR_RED + "[" + getErrorTimestamp() + " Error]" + x + RESET_COLOR));
+    }
+
+    @Override
+    public void println(int x) {
+        performLogging(Integer.toString(x), () -> super.println(ERROR_RED + "[" + getErrorTimestamp() + " Error]" + x + RESET_COLOR));
+    }
+
+    @Override
+    public void println(long x) {
+        performLogging(Long.toString(x), () -> super.println(ERROR_RED + "[" + getErrorTimestamp() + " Error]" + x + RESET_COLOR));
+    }
+
+    @Override
+    public void println(Object x) {
+        assert x != null;
+        performLogging(x.toString(), () -> super.println(ERROR_RED + "[" + getErrorTimestamp() + " Error]" + x + RESET_COLOR));
+    }
+
+    @Override
+    public void println(String string) {
+        performLogging(string, () -> super.println(ERROR_RED + "[" + getErrorTimestamp() + " Error] " + string + RESET_COLOR));
+    }
+
+    @Override
+    public PrintStream printf(Locale l, String format, Object... args) {
         console.stashLine();
-        String date = DATE_FORMAT.format(new Date());
-        String errorFormat = String.format(ERROR_FORMAT, date);
-        logs.printf(errorFormat + format, args);
-        PrintStream stream = printOperation.apply(ERROR_RED + errorFormat + RESET_COLOR + format, args);
+        String date = getErrorTimestamp();
+        logs.printf(l, "[" + date + " Error]" + format, args);
+        PrintStream stream = super.printf(l, ERROR_RED + "[" + date + " Error]" + format + RESET_COLOR, args);
         console.unstashLine();
         return stream;
     }
 
-    private void printLog(Consumer<String> printer, String message) {
-        final String date = DATE_FORMAT.format(new Date());
-        final String error = String.format(ERROR_FORMAT, date);
-        logs.println(error + message);
-        printer.accept(ERROR_RED + error + message + RESET_COLOR);
+    @Override
+    public PrintStream printf(String format, Object... args) {
+        console.stashLine();
+        String date = getErrorTimestamp();
+        logs.printf("[" + date + " Error]" + format, args);
+        PrintStream stream = super.printf(ERROR_RED + "[" + date + " Error]" + format + RESET_COLOR, args);
         console.unstashLine();
+        return stream;
     }
 }

@@ -1,6 +1,7 @@
 package fr.arcanmc.cardinal.core.scheduler;
 
 import fr.arcanmc.cardinal.Cardinal;
+import fr.arcanmc.cardinal.api.scheduller.CardinalTask;
 
 import java.util.ArrayList;
 import java.util.List;

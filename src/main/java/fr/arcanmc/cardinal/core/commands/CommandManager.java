@@ -1,6 +1,6 @@
 package fr.arcanmc.cardinal.core.commands;
 
-import fr.arcanmc.cardinal.core.commands.DefaultCommands;
+import fr.arcanmc.cardinal.api.command.CommandExecutor;
 
 import java.util.ArrayList;
 import java.util.List;

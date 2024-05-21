@@ -1,5 +1,6 @@
 package fr.arcanmc.cardinal.core.scheduler;
 
+import fr.arcanmc.cardinal.api.scheduller.CardinalTask;
 import lombok.Getter;
 
 @Getter

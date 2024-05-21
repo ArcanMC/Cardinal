@@ -1,4 +1,4 @@
-package fr.arcanmc.cardinal.module;
+package fr.arcanmc.cardinal.core.module;
 
 
 import fr.arcanmc.cardinal.Cardinal;

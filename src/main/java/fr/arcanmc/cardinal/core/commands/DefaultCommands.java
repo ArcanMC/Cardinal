@@ -1,6 +1,7 @@
 package fr.arcanmc.cardinal.core.commands;
 
 import fr.arcanmc.cardinal.Cardinal;
+import fr.arcanmc.cardinal.api.command.CommandExecutor;
 
 public class DefaultCommands implements CommandExecutor {
 

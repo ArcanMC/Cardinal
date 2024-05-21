@@ -34,7 +34,7 @@ public class CustomStringUtils {
             if (c == '"') {
                 insideQuote = !insideQuote;
             } else if (c == ' ' && !insideQuote) {
-                if (sb.length() > 0) {
+                if (!sb.isEmpty()) {
                     tokens.add(sb.toString());
                 }
                 sb.delete(0, sb.length());
@@ -44,7 +44,7 @@ public class CustomStringUtils {
         }
         tokens.add(sb.toString());
 
-        return tokens.toArray(new String[tokens.size()]);
+        return tokens.toArray(new String[0]);
     }
 
     private static List<String> splitIntoWords(String str) {
@@ -56,7 +56,7 @@ public class CustomStringUtils {
             if (c == '"') {
                 insideQuote = !insideQuote;
             } else if (c == ' ' && !insideQuote) {
-                if (sb.length() > 0) {
+                if (!sb.isEmpty()) {
                     words.add(sb.toString());
                     sb.delete(0, sb.length());
                 }
@@ -65,7 +65,7 @@ public class CustomStringUtils {
             }
         }
 
-        if (sb.length() > 0) {
+        if (!sb.isEmpty()) {
             words.add(sb.toString());
         }
         return words;

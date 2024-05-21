@@ -18,10 +18,7 @@ public class ServerProperties {
 
     private final int port;
     private final String logLevel;
-    private final String awsAccessKeyId,
-            awsSecretAccessKey,
-            awsRegion,
-            awsBucket;
+    private final String type;
     private final String redisHost, redisPassword;
     private final int redisPort;
 
@@ -47,14 +44,11 @@ public class ServerProperties {
         this.port = prop.getProperty("port") != null ? Integer.parseInt(prop.getProperty("port")) : 5000;
         this.logLevel = prop.getProperty("log_level") != null ? prop.getProperty("logLevel") : "INFO";
 
-        this.awsAccessKeyId = prop.getProperty("aws_access_key_id") != null ? prop.getProperty("aws_access_key_id") : System.getenv("AWS_ACCESS_KEY_ID");
-        this.awsSecretAccessKey = prop.getProperty("aws_secret_access_key") != null ? prop.getProperty("aws_secret_access_key") : System.getenv("AWS_SECRET_ACCESS_KEY");
-        this.awsRegion = prop.getProperty("aws_region") != null ? prop.getProperty("aws_region") : System.getenv("AWS_REGION");
-        this.awsBucket = prop.getProperty("aws_bucket") != null ? prop.getProperty("aws_bucket") : System.getenv("AWS_BUCKET");
+        this.type = prop.getProperty("type") != null ? prop.getProperty("type") : "SERVER";
 
         this.redisHost = prop.getProperty("redis_host") != null ? prop.getProperty("redis_host") : "localhost";
         this.redisPort = prop.getProperty("redis_port") != null ? Integer.parseInt(prop.getProperty("redis_port")) : 6379;
-        this.redisPassword = prop.getProperty("redis_password") != null ? prop.getProperty("redis_password") : "password";
+        this.redisPassword = prop.getProperty("redis_password") != null ? prop.getProperty("redis_password") : System.getenv("REDIS_PASSWORD");
     }
 
 }

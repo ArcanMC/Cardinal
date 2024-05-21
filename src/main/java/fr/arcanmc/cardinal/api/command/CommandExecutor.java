@@ -1,4 +1,4 @@
-package fr.arcanmc.cardinal.core.commands;
+package fr.arcanmc.cardinal.api.command;
 
 public interface CommandExecutor {
 

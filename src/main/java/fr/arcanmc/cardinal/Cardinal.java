@@ -1,14 +1,18 @@
 package fr.arcanmc.cardinal;
 
+import fr.arcanmc.cardinal.client.ClientService;
 import fr.arcanmc.cardinal.core.commands.CommandManager;
 import fr.arcanmc.cardinal.core.commands.DefaultCommands;
 import fr.arcanmc.cardinal.core.console.Console;
+import fr.arcanmc.cardinal.core.console.Logger;
 import fr.arcanmc.cardinal.core.redis.RedisAccess;
 import fr.arcanmc.cardinal.core.scheduler.CardinalScheduler;
 import fr.arcanmc.cardinal.core.scheduler.Tick;
 import fr.arcanmc.cardinal.file.ServerProperties;
-import fr.arcanmc.cardinal.module.CardinalModule;
-import fr.arcanmc.cardinal.module.ModuleManager;
+import fr.arcanmc.cardinal.core.module.CardinalModule;
+import fr.arcanmc.cardinal.core.module.ModuleManager;
+import fr.arcanmc.cardinal.core.service.ServiceManager;
+import fr.arcanmc.cardinal.server.ServerService;
 import lombok.Getter;
 
 import java.io.File;
@@ -33,12 +37,16 @@ public class Cardinal {
     private final Tick tick;
 
     @Getter
+    private final Logger logger;
+
+    @Getter
     private final CardinalScheduler cardinalScheduler;
 
     @Getter
     private final ServerProperties serverProperties;
 
-    private CommandManager commandManager;
+    @Getter
+    private final CommandManager commandManager;
 
     @Getter
     private final File moduleDirectory;
@@ -46,32 +54,57 @@ public class Cardinal {
     @Getter
     private final ModuleManager moduleManager;
 
+    @Getter
+    private final ServiceManager serviceManager;
+
     public Cardinal() {
         instance = this;
-        System.out.println("Init console");
+
         console = initializeConsole();
-        console.logs.println("Init shutdown hook");
-        addShutdownHook();
-        console.logs.println("Init server properties");
         serverProperties = initializeServerProperties();
-        console.logs.println("Init redis");
+
+        try {
+            logger = new Logger(console.getIn(), console.getOut(), console.getErr());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        this.commandManager = new CommandManager(new DefaultCommands());
+
+        addShutdownHook();
+
+        String mode = serverProperties.getType();
+
+        this.logger.info("Starting Cardinal in" + mode + " mode");
+
         RedisAccess.init();
-        console.logs.println("Init scheduler");
+
         cardinalScheduler = new CardinalScheduler();
         tick = new Tick(this);
-        console.logs.println("Init modules");
+
+        this.serviceManager = new ServiceManager();
+
+        if (mode.equalsIgnoreCase("SERVER")) {
+            this.logger.info("Loading Services");
+            serviceManager.register(new ServerService());
+        } else if (mode.equalsIgnoreCase("CLIENT")) {
+            this.logger.info("Loading Services");
+            serviceManager.register(new ClientService());
+        } else {
+            this.logger.error("Invalid mode in server.properties");
+            terminate();
+        }
+
+        this.logger.info("Loading Modules");
         moduleDirectory = new File("modules");
         moduleDirectory.mkdirs();
         moduleManager = new ModuleManager(new DefaultCommands(), moduleDirectory);
         loadModulesForManager();
         enableAllModules();
-    }
 
-    public CommandManager getCommandManager() {
-        if (commandManager == null) {
-            commandManager = new CommandManager(new DefaultCommands());
-        }
-        return commandManager;
+        this.logger.info("Cardinal is now up!");
+        this.running.set(true);
+        console.run();
     }
 
     private Console initializeConsole() {
@@ -104,7 +137,7 @@ public class Cardinal {
                 if (in != null)
                     Files.copy(in, serverPropertiesFile.toPath());
             } catch (IOException e) {
-                e.printStackTrace();
+                this.logger.error("Failed to copy server.properties file");
             }
         }
     }
@@ -116,7 +149,7 @@ public class Cardinal {
             loadModulesMethod.invoke(moduleManager);
             loadModulesMethod.setAccessible(false);
         } catch (ReflectiveOperationException e) {
-            e.printStackTrace();
+            this.logger.error("Failed to load modules");
         }
     }
 
@@ -137,6 +170,7 @@ public class Cardinal {
 
     protected void terminate() {
         running.set(false);
+        this.serviceManager.unloadAll();
         RedisAccess.close();
         for (CardinalModule plugin : Cardinal.getInstance().getModuleManager().getModules()) {
             try {
@@ -167,7 +201,7 @@ public class Cardinal {
         try {
             CommandManager.get().fireExecutors(args);
         } catch (Exception e) {
-            e.printStackTrace();
+            this.logger.error("An error occurred while executing command: " + String.join(" ", args));
         }
     }
 }

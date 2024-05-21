@@ -7,9 +7,8 @@ import java.util.Date;
 import java.util.Locale;
 
 public class ConsoleOutputStream extends PrintStream {
-
-    private final PrintStream logs;
-    private final Console console;
+    private PrintStream logs;
+    private Console console;
 
     public ConsoleOutputStream(Console console, OutputStream out, PrintStream logs) {
         super(out);
@@ -17,46 +16,135 @@ public class ConsoleOutputStream extends PrintStream {
         this.console = console;
     }
 
+    private void stashConsoleLine() {
+        try {
+            console.stashLine();
+        } catch (Exception ignore) {
+        }
+    }
+
+    private void unstashConsoleLine() {
+        try {
+            console.unstashLine();
+        } catch (Exception ignore) {
+        }
+    }
+
+    private String getFormattedDate() {
+        return new SimpleDateFormat("HH:mm:ss").format(new Date());
+    }
+
+    private String formatMessage(String message) {
+        return "[" + getFormattedDate() + " Info] " + message;
+    }
+
     @Override
     public PrintStream printf(Locale l, String format, Object... args) {
-        stashAndAppendMessage(l, format, args);
-        PrintStream stream = super.printf(l, getTimeStampedMessage(format), args);
-        return unstashAndReturnStream(stream);
+        stashConsoleLine();
+        String formattedString = formatMessage(format);
+        logs.printf(l, formattedString, args);
+        PrintStream stream = super.printf(l, formattedString, args);
+        unstashConsoleLine();
+        return stream;
     }
 
     @Override
     public PrintStream printf(String format, Object... args) {
-        stashAndAppendMessage(format, args);
-        PrintStream stream = super.printf(getTimeStampedMessage(format), args);
-        return unstashAndReturnStream(stream);
+        stashConsoleLine();
+        String formattedString = formatMessage(format);
+        logs.printf(formattedString, args);
+        PrintStream stream = super.printf(formattedString, args);
+        unstashConsoleLine();
+        return stream;
     }
 
     @Override
     public void println() {
-        stashAndAppendMessage();
-        super.println(getTimeStampedMessage());
-        console.unstashLine();
+        stashConsoleLine();
+        String formattedString = formatMessage("");
+        logs.println(formattedString);
+        super.println(formattedString);
+        unstashConsoleLine();
+    }
+
+    @Override
+    public void println(boolean x) {
+        stashConsoleLine();
+        String formattedString = formatMessage(String.valueOf(x));
+        logs.println(formattedString);
+        super.println(formattedString);
+        unstashConsoleLine();
+    }
+
+    @Override
+    public void println(char x) {
+        stashConsoleLine();
+        String formattedString = formatMessage(String.valueOf(x));
+        logs.println(formattedString);
+        super.println(formattedString);
+        unstashConsoleLine();
+    }
+
+    @Override
+    public void println(char[] x) {
+        stashConsoleLine();
+        String formattedString = formatMessage(String.valueOf(x));
+        logs.println(formattedString);
+        super.println(formattedString);
+        unstashConsoleLine();
+    }
+
+    @Override
+    public void println(double x) {
+        stashConsoleLine();
+        String formattedString = formatMessage(String.valueOf(x));
+        logs.println(formattedString);
+        super.println(formattedString);
+        unstashConsoleLine();
+    }
+
+    @Override
+    public void println(float x) {
+        stashConsoleLine();
+        String formattedString = formatMessage(String.valueOf(x));
+        logs.println(formattedString);
+        super.println(formattedString);
+        unstashConsoleLine();
+    }
+
+    @Override
+    public void println(int x) {
+        stashConsoleLine();
+        String formattedString = formatMessage(String.valueOf(x));
+        logs.println(formattedString);
+        super.println(formattedString);
+        unstashConsoleLine();
+    }
+
+    @Override
+    public void println(long x) {
+        stashConsoleLine();
+        String formattedString = formatMessage(String.valueOf(x));
+        logs.println(formattedString);
+        super.println(formattedString);
+        unstashConsoleLine();
     }
 
     @Override
     public void println(Object x) {
-        stashAndAppendMessage(String.valueOf(x));
-        super.println(getTimeStampedMessage(String.valueOf(x)));
-        console.unstashLine();
+        stashConsoleLine();
+        String formattedString = formatMessage(String.valueOf(x));
+        logs.println(formattedString);
+        super.println(formattedString);
+        unstashConsoleLine();
     }
 
-    private void stashAndAppendMessage(Object... args) {
-        console.stashLine();
-        logs.printf(getTimeStampedMessage(args));
-    }
-
-    private String getTimeStampedMessage(Object... args) {
-        String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
-        return "[" + date + " Info]" + (args.length > 0 ? String.valueOf(args[0]) : "");
-    }
-
-    private PrintStream unstashAndReturnStream(PrintStream stream) {
-        console.unstashLine();
-        return stream;
+    @Override
+    public void println(String string) {
+        stashConsoleLine();
+        String formattedString = formatMessage(string);
+        logs.println(formattedString);
+        super.println(formattedString);
+        unstashConsoleLine();
     }
 }
