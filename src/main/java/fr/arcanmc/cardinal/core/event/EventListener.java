@@ -1,12 +1,12 @@
-package fr.arcanmc.cardinal.core.pubsub.feeder;
+package fr.arcanmc.cardinal.core.event;
 
-import fr.arcanmc.cardinal.api.feeder.IFeedListener;
+import fr.arcanmc.cardinal.api.event.IEventListener;
 import fr.arcanmc.cardinal.core.redis.RedisAccess;
 import org.redisson.api.RTopic;
 
-public abstract class FeedListener<T> implements IFeedListener<T> {
+public abstract class EventListener<T> implements IEventListener<T> {
 
-    public FeedListener() {
+    public EventListener() {
         String name = "Cardinal:" + this.getName();
 
         RTopic<T> receiver = RedisAccess.get().getClient().getTopic(name);

@@ -1,8 +1,11 @@
 [
   {
-    "name": "",
-    "type": "",
-    "maxPlayers": "",
-    "imageLink": ""
+    "name": "Skywars",
+    "prefix": "sk",
+    "imageId": "",
+    "environmentVariables": {
+      "map": "Setting",
+      "maxPlayers": "100"
+    }
   }
 ]

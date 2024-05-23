@@ -1,5 +1,6 @@
 package fr.arcanmc.cardinal.core.service;
 
+import fr.arcanmc.cardinal.api.service.Service;
 import lombok.Getter;
 
 import java.util.ArrayList;

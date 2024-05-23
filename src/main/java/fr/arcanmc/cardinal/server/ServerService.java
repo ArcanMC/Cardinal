@@ -1,6 +1,6 @@
 package fr.arcanmc.cardinal.server;
 
-import fr.arcanmc.cardinal.core.service.Service;
+import fr.arcanmc.cardinal.api.service.Service;
 
 public class ServerService extends Service {
 

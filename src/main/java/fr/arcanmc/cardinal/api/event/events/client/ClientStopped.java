@@ -1,9 +1,12 @@
-package fr.arcanmc.cardinal.api.feeder.event.client;
+package fr.arcanmc.cardinal.api.event.events.client;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * Represents a stopped client.
+ */
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
