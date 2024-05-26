@@ -97,7 +97,7 @@ public class TemplateManager {
         logger.info("Template created: " + name);
     }
 
-    public void delete(String name) {
+    public void deleteTemplate(String name) {
         logger.info("Attempting to delete template " + name);
         if (getTemplateData().getTemplates().stream().anyMatch(template -> template.getName().equalsIgnoreCase(name))) {
             Template template = getTemplateData().getTemplates().stream().filter(values -> values.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
@@ -114,7 +114,7 @@ public class TemplateManager {
         }
     }
 
-    public void update(String name) {
+    public void updateTemplate(String name) {
         logger.info("Attempting to update template " + name);
         if (getTemplateData().getTemplates().stream().anyMatch(template -> template.getName().equalsIgnoreCase(name))) {
             Template template = getTemplateData().getTemplates().stream().filter(values -> values.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
@@ -130,6 +130,18 @@ public class TemplateManager {
         } else {
             logger.error("Any template found with this name..");
         }
+    }
+
+    public Template getTemplate(String name) {
+        return this.templateData.getTemplates().stream().filter(template -> template.getName().equals(name)).findFirst().orElse(null);
+    }
+
+    public boolean templateExists(String name) {
+        return this.templateData.getTemplates().stream().anyMatch(template -> template.getName().equals(name));
+    }
+
+    public boolean templateHasImage(String name) {
+        return this.templateData.getTemplates().stream().anyMatch(template -> template.getName().equals(name) && template.getImageId() != null);
     }
 
     public void save() {

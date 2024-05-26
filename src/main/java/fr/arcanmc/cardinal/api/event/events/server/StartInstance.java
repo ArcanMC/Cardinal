@@ -17,6 +17,8 @@ public class StartInstance {
 
     private String type;
 
+    private int clientID;
+
     private int amount;
 
     private boolean hosted;

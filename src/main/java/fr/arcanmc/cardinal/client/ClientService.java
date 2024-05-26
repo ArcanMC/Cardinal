@@ -6,6 +6,7 @@ import fr.arcanmc.cardinal.api.event.events.client.ClientStopped;
 import fr.arcanmc.cardinal.api.service.Service;
 import fr.arcanmc.cardinal.client.event.ClientStartedEvent;
 import fr.arcanmc.cardinal.client.event.ClientStoppedEvent;
+import fr.arcanmc.cardinal.client.game.GameManager;
 import fr.arcanmc.cardinal.client.template.TemplateManager;
 import fr.arcanmc.cardinal.file.FileConfiguration;
 import lombok.Getter;
@@ -20,8 +21,9 @@ public class ClientService extends Service {
     private static ClientService instance;
 
     private TemplateManager templateManager;
+    private GameManager gameManager;
 
-    private String ip = "notFound";
+    private String myIp = "notFound";
     private int myId = -1;
     private String myName = "anonymous";
 
@@ -34,7 +36,7 @@ public class ClientService extends Service {
     public void onEnable() {
         instance = this;
 
-        this.ip = getIp();
+        this.myIp = getIp();
 
         File configFile = new File("client.yml");
         if (!configFile.exists()) {
@@ -55,14 +57,15 @@ public class ClientService extends Service {
 
 
         this.templateManager = new TemplateManager();
+        this.gameManager = new GameManager();
 
-        new ClientStartedEvent(new ClientStarted(this.myId, this.myName, this.ip)).publish();
+        new ClientStartedEvent(new ClientStarted(this.myId, this.myName, this.myIp)).publish();
     }
 
     @Override
     public void onDisable() {
         this.templateManager.save();
-        new ClientStoppedEvent(new ClientStopped(this.ip)).publish();
+        new ClientStoppedEvent(new ClientStopped(this.myIp)).publish();
     }
 
     private String getIp() {
