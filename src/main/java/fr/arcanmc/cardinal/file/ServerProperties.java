@@ -16,7 +16,6 @@ public class ServerProperties {
 
     private final File file;
 
-    private final int port;
     private final String logLevel;
     private final String type;
     private final String redisHost, redisPassword;
@@ -41,7 +40,6 @@ public class ServerProperties {
             prop.putIfAbsent(key, value);
         }
 
-        this.port = prop.getProperty("port") != null ? Integer.parseInt(prop.getProperty("port")) : 5000;
         this.logLevel = prop.getProperty("log_level") != null ? prop.getProperty("logLevel") : "INFO";
 
         this.type = prop.getProperty("type") != null ? prop.getProperty("type") : "SERVER";

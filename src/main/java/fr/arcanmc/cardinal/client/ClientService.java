@@ -7,6 +7,7 @@ import fr.arcanmc.cardinal.api.service.Service;
 import fr.arcanmc.cardinal.client.event.ClientStartedEvent;
 import fr.arcanmc.cardinal.client.event.ClientStoppedEvent;
 import fr.arcanmc.cardinal.client.game.GameManager;
+import fr.arcanmc.cardinal.client.task.GameHealthChecker;
 import fr.arcanmc.cardinal.client.template.TemplateManager;
 import fr.arcanmc.cardinal.file.FileConfiguration;
 import lombok.Getter;
@@ -22,6 +23,7 @@ public class ClientService extends Service {
 
     private TemplateManager templateManager;
     private GameManager gameManager;
+    private FileConfiguration config;
 
     private String myIp = "notFound";
     private int myId = -1;
@@ -48,7 +50,7 @@ public class ClientService extends Service {
         }
 
         try {
-            FileConfiguration config = new FileConfiguration(configFile);
+            config = new FileConfiguration(configFile);
             this.myId = config.get("id", Integer.class);
             this.myName = config.get("name", String.class);
         } catch (IOException e) {
@@ -58,6 +60,9 @@ public class ClientService extends Service {
 
         this.templateManager = new TemplateManager();
         this.gameManager = new GameManager();
+
+        if (this.getConfig().get("health.autoStop.enabled", Boolean.class))
+            Cardinal.getInstance().getCardinalScheduler().runTaskTimer(new GameHealthChecker(), 0, this.getConfig().get("health.autoStop.period", Integer.class) * 20L);
 
         new ClientStartedEvent(new ClientStarted(this.myId, this.myName, this.myIp)).publish();
     }

@@ -81,14 +81,14 @@ public class GameManager {
             return;
         }
         final String key = "instances:" + serverName;
-        final RBucket<GameInstance> accountRBucket = redissonClient.getBucket(key);
+        final RBucket<GameInstance> gameBucket = redissonClient.getBucket(key);
         this.gameInstances.remove(serverName);
         try {
             Runtime.getRuntime().exec("docker rm -f " + serverName);
         } catch (IOException e) {
             logger.error("Could not stop game instance " + serverName);
         }
-        accountRBucket.delete();
+        gameBucket.delete();
     }
 
     public void closeAll() {

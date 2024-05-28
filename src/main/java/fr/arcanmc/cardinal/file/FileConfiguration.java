@@ -43,7 +43,7 @@ public class FileConfiguration {
 
     public FileConfiguration reloadConfig(Reader reader) {
         Yaml yml = new Yaml();
-        mapping = yml.load(reader);
+        mapping = (Map<String, Object>) yml.load(reader);
         return this;
     }
 
@@ -99,7 +99,7 @@ public class FileConfiguration {
 
     private Representer createRepresenter() {
         DumperOptions options = createDumperOptions();
-        Representer customRepresenter = new Representer(options);
+        Representer customRepresenter = new Representer();
         YamlOrder customProperty = new YamlOrder();
         customRepresenter.setPropertyUtils(customProperty);
         return customRepresenter;

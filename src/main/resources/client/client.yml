@@ -1,2 +1,8 @@
 id: 1
 name: "Anonymous"
+health:
+  autoStop:
+    enabled: true
+    period: 300
+    instanceNotStartedSince: 120000
+    instanceNoPlayersSince: 600000
