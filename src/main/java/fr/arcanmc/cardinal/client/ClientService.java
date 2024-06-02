@@ -4,11 +4,13 @@ import fr.arcanmc.cardinal.Cardinal;
 import fr.arcanmc.cardinal.api.event.events.client.ClientStarted;
 import fr.arcanmc.cardinal.api.event.events.client.ClientStopped;
 import fr.arcanmc.cardinal.api.service.Service;
+import fr.arcanmc.cardinal.client.commands.TemplateCommands;
 import fr.arcanmc.cardinal.client.event.ClientStartedEvent;
 import fr.arcanmc.cardinal.client.event.ClientStoppedEvent;
 import fr.arcanmc.cardinal.client.game.GameManager;
 import fr.arcanmc.cardinal.client.task.GameHealthChecker;
 import fr.arcanmc.cardinal.client.template.TemplateManager;
+import fr.arcanmc.cardinal.core.docker.DockerAccess;
 import fr.arcanmc.cardinal.file.FileConfiguration;
 import lombok.Getter;
 
@@ -40,6 +42,9 @@ public class ClientService extends Service {
 
         this.myIp = getIp();
 
+        new DockerAccess();
+        DockerAccess.init();
+
         File configFile = new File("client.yml");
         if (!configFile.exists()) {
             try (InputStream in = getClass().getClassLoader().getResourceAsStream("client/client.yml")) {
@@ -63,6 +68,8 @@ public class ClientService extends Service {
 
         if (this.getConfig().get("health.autoStop.enabled", Boolean.class))
             Cardinal.getInstance().getCardinalScheduler().runTaskTimer(new GameHealthChecker(), 0, this.getConfig().get("health.autoStop.period", Integer.class) * 20L);
+
+        registerCommand(new TemplateCommands());
 
         new ClientStartedEvent(new ClientStarted(this.myId, this.myName, this.myIp)).publish();
     }

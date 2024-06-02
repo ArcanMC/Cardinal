@@ -22,7 +22,7 @@ public class RedisCredentials {
     }
 
     public String toURI() {
-        return "redis://" +
+        return
                 this.ip +
                 ":" +
                 this.port;

@@ -1,4 +1,4 @@
-package fr.arcanmc.cardinal.server.listeners;
+package fr.arcanmc.cardinal.server.listeners.listener;
 
 import fr.arcanmc.cardinal.api.event.events.server.StartInstance;
 import fr.arcanmc.cardinal.core.event.EventListener;

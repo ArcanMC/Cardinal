@@ -75,14 +75,14 @@ public class Cardinal {
 
         String mode = serverProperties.getType();
 
-        this.logger.info("Starting Cardinal in" + mode + " mode");
-
-        RedisAccess.init();
+        this.logger.info("Starting Cardinal in mode: " + mode);
 
         cardinalScheduler = new CardinalScheduler();
         tick = new Tick(this);
 
         this.serviceManager = new ServiceManager();
+
+        RedisAccess.init();
 
         if (mode.equalsIgnoreCase("SERVER")) {
             this.logger.info("Loading Services");

@@ -1,17 +1,18 @@
-package fr.arcanmc.cardinal.server.listeners;
+package fr.arcanmc.cardinal.server.listeners.listener;
 
 import fr.arcanmc.cardinal.api.event.events.server.StopInstance;
 import fr.arcanmc.cardinal.core.event.EventListener;
 import fr.arcanmc.cardinal.server.ServerService;
 
-public class StopInstanceListener extends EventListener<StopInstance> {
+public class InstanceStoppedListener extends EventListener<StopInstance> {
     @Override
     public String getName() {
-        return "stopInstance";
+        return "gameInstanceStopped";
     }
 
     @Override
     public void listen(StopInstance object) {
-        ServerService.get().getGameManager().stopInstance(object.getName());
+        ServerService.get().getGameManager().getGames().remove(object.getName());
+
     }
 }

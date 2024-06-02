@@ -3,8 +3,8 @@ package fr.arcanmc.cardinal.server;
 import fr.arcanmc.cardinal.api.event.events.server.ForceStopClient;
 import fr.arcanmc.cardinal.api.game.GameInstance;
 import fr.arcanmc.cardinal.api.service.Service;
-import fr.arcanmc.cardinal.client.event.ClientStoppedEvent;
 import fr.arcanmc.cardinal.core.redis.RedisAccess;
+import fr.arcanmc.cardinal.server.bungeecord.BungeeManager;
 import fr.arcanmc.cardinal.server.client.ClientManager;
 import fr.arcanmc.cardinal.server.commands.HelpCommand;
 import fr.arcanmc.cardinal.server.commands.client.ClientHelpCommand;
@@ -16,7 +16,18 @@ import fr.arcanmc.cardinal.server.commands.instances.InstanceStartCommand;
 import fr.arcanmc.cardinal.server.commands.instances.InstanceStopCommand;
 import fr.arcanmc.cardinal.server.event.ClientForceStopEvent;
 import fr.arcanmc.cardinal.server.game.GameManager;
-import fr.arcanmc.cardinal.server.listeners.*;
+import fr.arcanmc.cardinal.server.listeners.bungee.BungeeConnectedListener;
+import fr.arcanmc.cardinal.server.listeners.bungee.BungeeDisconnectedListener;
+import fr.arcanmc.cardinal.server.listeners.client.ClientStartedListener;
+import fr.arcanmc.cardinal.server.listeners.client.ClientStopListener;
+import fr.arcanmc.cardinal.server.listeners.listener.InstanceStartedListener;
+import fr.arcanmc.cardinal.server.listeners.listener.InstanceStoppedListener;
+import fr.arcanmc.cardinal.server.listeners.listener.StartInstanceListener;
+import fr.arcanmc.cardinal.server.listeners.listener.StopInstanceListener;
+import fr.arcanmc.cardinal.server.listeners.player.PlayerConnectedListener;
+import fr.arcanmc.cardinal.server.listeners.player.PlayerDisconnectedListener;
+import fr.arcanmc.cardinal.server.listeners.player.PlayerSwitchInstanceListener;
+import fr.arcanmc.cardinal.server.player.PlayerManager;
 import lombok.Getter;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
@@ -28,6 +39,8 @@ public class ServerService extends Service {
 
     private ClientManager clientManager;
     private GameManager gameManager;
+    private BungeeManager bungeeManager;
+    private PlayerManager playerManager;
 
     @Override
     public String getName() {
@@ -38,7 +51,9 @@ public class ServerService extends Service {
     public void onEnable() {
         instance = this;
         this.clientManager = new ClientManager();
+        this.bungeeManager = new BungeeManager();
         this.gameManager = new GameManager();
+        this.playerManager = new PlayerManager();
 
         registerListeners();
         registerCommands();
@@ -76,6 +91,11 @@ public class ServerService extends Service {
         new InstanceStoppedListener();
         new StartInstanceListener();
         new StopInstanceListener();
+        new BungeeConnectedListener();
+        new BungeeDisconnectedListener();
+        new PlayerConnectedListener();
+        new PlayerSwitchInstanceListener();
+        new PlayerDisconnectedListener();
     }
 
     public static ServerService get() {

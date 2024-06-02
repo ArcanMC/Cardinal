@@ -1,6 +1,4 @@
 package fr.arcanmc.cardinal.api.event.events.server;
-
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 /**
@@ -8,6 +6,5 @@ import lombok.NoArgsConstructor;
  * It can be used to forcefully terminate a running process.
  */
 @NoArgsConstructor
-@AllArgsConstructor
 public class ForceStopClient {
 }

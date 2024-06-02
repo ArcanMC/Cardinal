@@ -3,49 +3,48 @@ package fr.arcanmc.cardinal.utils.file;
 import java.io.*;
 
 public class FileUtils {
-    private static final String EMPTY_CONTENT = "";
 
-    public static void createFileIfNotExists(File file) throws IOException {
+    public static void createFile(File file) throws IOException {
         if (!file.exists()) {
-            createParentDirsIfNotExists(file);
+            if (file.getParentFile() != null)
+                file.getParentFile().mkdirs();
             file.createNewFile();
         }
     }
 
-    private static void createParentDirsIfNotExists(File file) {
-        File parentFile = file.getParentFile();
-        if (parentFile != null) {
-            parentFile.mkdirs();
-        }
-    }
-
     public static boolean deleteFile(File file) {
-        return file.exists() && file.delete();
+        if (file.exists()) {
+            return file.delete();
+        }
+        return false;
     }
 
-    public static void writeToFile(File file, String text) throws IOException {
-        createFileIfNotExists(file);
-
-        try (FileWriter writer = new FileWriter(file)) {
+    public static void saveFile(File file, String text) {
+        try {
+            createFile(file);
+            FileWriter writer = new FileWriter(file);
             writer.write(text);
             writer.flush();
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-    public static String readFromFile(File file) throws IOException {
-        if (!file.exists()) {
-            return EMPTY_CONTENT;
-        }
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            StringBuilder stringBuilder = new StringBuilder();
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-                stringBuilder.append(line);
+    public static String loadFile(File file) {
+        if (file.exists())
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader(file));
+                StringBuilder stringBuilder = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null)
+                    stringBuilder.append(line);
+                reader.close();
+                return stringBuilder.toString();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-
-            return stringBuilder.toString();
-        }
+        return "";
     }
+
 }

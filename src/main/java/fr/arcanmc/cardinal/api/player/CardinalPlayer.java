@@ -2,6 +2,7 @@ package fr.arcanmc.cardinal.api.player;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Map;
 import java.util.UUID;
@@ -14,14 +15,18 @@ public class CardinalPlayer {
     @Getter
     private String name;
     @Getter
+    @Setter
     private String currentServer;
+    @Getter
+    private int bungeeId;
     private Map<String, String> data;
 
-    public CardinalPlayer(UUID uuid, String name, String currentServer, Map<String, String> data) {
+    public CardinalPlayer(UUID uuid, String name, String currentServer, int bungeeId, Map<String, String> data) {
         this.uuid = uuid;
         this.name = name;
         this.currentServer = currentServer;
         this.data = data;
+        this.bungeeId = bungeeId;
     }
 
     public Map<String, String> getAllData() {

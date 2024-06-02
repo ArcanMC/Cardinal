@@ -18,19 +18,20 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 public class TemplateManager {
 
     @Getter
-    private File templateFolder;
+    private final File templateFolder;
 
     @Getter
-    private TemplateData templateData;
+    private final TemplateData templateData;
 
     @Getter
-    private Serialize serialize;
+    private final Serialize serialize;
 
-    private Logger logger = Cardinal.getInstance().getLogger();
+    private final Logger logger = Cardinal.getInstance().getLogger();
 
     public TemplateManager() {
 
@@ -39,19 +40,15 @@ public class TemplateManager {
         this.templateFolder = new File("templates");
         this.templateFolder.mkdirs();
 
-        try {
-            String json = FileUtils.readFromFile(new File("templates.json"));
-            TemplateData templateData = (TemplateData) serialize.deserialize(json, TemplateData.class);
+        String json = FileUtils.loadFile(new File("templates.json"));
+        TemplateData templateData = (TemplateData) serialize.deserialize(json, TemplateData.class);
 
-            if (templateData == null) {
-                templateData = new TemplateData(new ArrayList<>(List.of(
-                        new Template("default", "df", "", null)
-                )));
-            }
-            this.templateData = templateData;
-        } catch (IOException e) {
-            logger.error("Could not read templates.json file");
+        if (templateData == null) {
+            templateData = new TemplateData(new ArrayList<>(List.of(
+                    new Template("default", "df", "", null)
+            )));
         }
+        this.templateData = templateData;
     }
 
     public void createTemplate(String name, String prefix) {
@@ -145,11 +142,8 @@ public class TemplateManager {
     }
 
     public void save() {
-        try {
-            FileUtils.writeToFile(new File("templates.son"), serialize.serialize(this.templateData));
-        } catch (IOException e) {
-            logger.error("Could not save templates");
-        }
+        String json = getSerialize().serialize(templateData);
+        FileUtils.saveFile(new File("templates.json"), json);
     }
 
     private String createDockerImage(String dockerFilePath, String imageName) {
@@ -158,10 +152,11 @@ public class TemplateManager {
             imageId = buildImageCmd
                     .withDockerfile(new File(dockerFilePath))
                     .withNoCache(Boolean.TRUE)
-                    .withTags(Collections.singleton(imageName))
+                    .withTags(Collections.singleton(imageName.toLowerCase(Locale.ROOT)))
                     .exec(new BuildImageResultCallback())
                     .awaitImageId();
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error("Could not build Docker image");
         }
         return imageId;

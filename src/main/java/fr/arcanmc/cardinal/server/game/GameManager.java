@@ -62,6 +62,11 @@ public class GameManager {
         return gameBucket.get();
     }
 
+    public void updateGameInstance(GameInstance gameInstance) {
+        RBucket<GameInstance> gameBucket = redisAccess.getBucket("game:" + gameInstance.getName());
+        gameBucket.set(gameInstance);
+    }
+
     public List<GameInstance> getGameInstances() {
         fetchInstances();
         List<GameInstance> gameInstances = new ArrayList<>();

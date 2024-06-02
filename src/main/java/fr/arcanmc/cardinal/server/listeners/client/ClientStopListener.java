@@ -1,4 +1,4 @@
-package fr.arcanmc.cardinal.server.listeners;
+package fr.arcanmc.cardinal.server.listeners.client;
 
 import fr.arcanmc.cardinal.Cardinal;
 import fr.arcanmc.cardinal.api.client.Client;
