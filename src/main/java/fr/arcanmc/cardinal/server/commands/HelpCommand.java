@@ -13,10 +13,10 @@ public class HelpCommand implements CommandExecutor {
             cardinal.getLogger().info("[DEFAULT] List of commands:");
             cardinal.getLogger().info("help - Show this message");
             cardinal.getLogger().info("stop - Stop the server");
-            cardinal.getLogger().info("info - Show server information");
             cardinal.getLogger().info("client - List all client management commands");
             cardinal.getLogger().info("instances - List all instances management commands");
-            cardinal.getLogger().info("modules - List all modules management commands");
+            cardinal.getLogger().info("player - List all player management commands");
+            cardinal.getLogger().info("bungee - List all bungees connected");
 
         }
     }
