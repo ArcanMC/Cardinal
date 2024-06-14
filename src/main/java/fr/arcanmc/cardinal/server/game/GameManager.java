@@ -1,12 +1,12 @@
 package fr.arcanmc.cardinal.server.game;
 
 import fr.arcanmc.cardinal.api.client.Client;
-import fr.arcanmc.cardinal.api.event.events.server.StartInstance;
+import fr.arcanmc.cardinal.api.event.events.client.StartInstanceClient;
 import fr.arcanmc.cardinal.api.event.events.server.StopInstance;
 import fr.arcanmc.cardinal.api.game.GameInstance;
 import fr.arcanmc.cardinal.core.redis.RedisAccess;
 import fr.arcanmc.cardinal.server.ServerService;
-import fr.arcanmc.cardinal.server.event.StartInstanceEvent;
+import fr.arcanmc.cardinal.server.event.StartInstanceClientEvent;
 import fr.arcanmc.cardinal.server.event.StopInstanceEvent;
 import lombok.Getter;
 import org.redisson.api.RBucket;
@@ -27,13 +27,19 @@ public class GameManager {
 
     public void startGameInstance(String serverType, int amount, UUID host) {
         Client client = ServerService.get().getClientManager().getRandomClient();
-        new StartInstanceEvent(new StartInstance(serverType, client.getId(), amount, (host != null), host)).publish();
+        if (client == null) {
+            return;
+        }
+        new StartInstanceClientEvent(new StartInstanceClient(serverType, client.getId(), amount, (host != null), host)).publish();
         fetchInstances();
     }
 
     public void startGameInstance(int clientId, String serverType, int amount, UUID host) {
         Client client = ServerService.get().getClientManager().getClient(clientId);
-        new StartInstanceEvent(new StartInstance(serverType, client.getId(), amount, (host != null), host)).publish();
+        if (client == null) {
+            return;
+        }
+        new StartInstanceClientEvent(new StartInstanceClient(serverType, client.getId(), amount, (host != null), host)).publish();
         fetchInstances();
     }
 

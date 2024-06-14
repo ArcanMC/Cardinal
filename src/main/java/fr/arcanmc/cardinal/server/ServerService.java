@@ -14,6 +14,9 @@ import fr.arcanmc.cardinal.server.commands.instances.InstanceHelpCommand;
 import fr.arcanmc.cardinal.server.commands.instances.InstanceListCommand;
 import fr.arcanmc.cardinal.server.commands.instances.InstanceStartCommand;
 import fr.arcanmc.cardinal.server.commands.instances.InstanceStopCommand;
+import fr.arcanmc.cardinal.server.commands.player.PlayerHelpCommand;
+import fr.arcanmc.cardinal.server.commands.player.PlayerInfoCommand;
+import fr.arcanmc.cardinal.server.commands.player.PlayerListCommand;
 import fr.arcanmc.cardinal.server.event.ClientForceStopEvent;
 import fr.arcanmc.cardinal.server.game.GameManager;
 import fr.arcanmc.cardinal.server.listeners.bungee.BungeeConnectedListener;
@@ -82,6 +85,10 @@ public class ServerService extends Service {
         registerCommand(new InstanceStartCommand());
         registerCommand(new InstanceStopCommand());
         registerCommand(new InstanceListCommand());
+
+        registerCommand(new PlayerHelpCommand());
+        registerCommand(new PlayerInfoCommand());
+        registerCommand(new PlayerListCommand());
     }
 
     private void registerListeners() {

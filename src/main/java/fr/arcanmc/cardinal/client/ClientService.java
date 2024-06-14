@@ -8,6 +8,8 @@ import fr.arcanmc.cardinal.client.commands.TemplateCommands;
 import fr.arcanmc.cardinal.client.event.ClientStartedEvent;
 import fr.arcanmc.cardinal.client.event.ClientStoppedEvent;
 import fr.arcanmc.cardinal.client.game.GameManager;
+import fr.arcanmc.cardinal.client.listener.ForceStopListener;
+import fr.arcanmc.cardinal.client.listener.StartInstanceListener;
 import fr.arcanmc.cardinal.client.task.GameHealthChecker;
 import fr.arcanmc.cardinal.client.template.TemplateManager;
 import fr.arcanmc.cardinal.core.docker.DockerAccess;
@@ -72,6 +74,10 @@ public class ClientService extends Service {
         registerCommand(new TemplateCommands());
 
         new ClientStartedEvent(new ClientStarted(this.myId, this.myName, this.myIp)).publish();
+
+        new ForceStopListener();
+        new StartInstanceListener();
+        new StartInstanceListener();
     }
 
     @Override

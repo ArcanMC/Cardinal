@@ -14,12 +14,12 @@ import org.redisson.api.RedissonClient;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.util.*;
 
 public class GameManager {
 
-    private final String REDIS_KEY = "game:";
     private final RedissonClient redissonClient;
     @Getter
     private final Set<String> gameInstances;
@@ -55,10 +55,11 @@ public class GameManager {
                     " -e SERVERNAME=" + gameInstance.getName() +
                     " -e SERVERTYPE=" + gameInstance.getTemplateName() +
                     " -d " + templateData.getImageId());
-            BufferedReader reader = new BufferedReader(new java.io.InputStreamReader(process.getInputStream()));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                logger.info(line);
+            BufferedReader bufferedReaderObj = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String sLine = "";
+            StringBuilder output = new StringBuilder();
+            while ((sLine = bufferedReaderObj.readLine()) != null) {
+                output.append(sLine);
             }
         } catch (Exception e) {
             logger.error("Could not start game instance for template " + template);
