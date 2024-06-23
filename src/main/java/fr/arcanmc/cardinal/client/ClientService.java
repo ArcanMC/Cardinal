@@ -10,6 +10,7 @@ import fr.arcanmc.cardinal.client.event.ClientStoppedEvent;
 import fr.arcanmc.cardinal.client.game.GameManager;
 import fr.arcanmc.cardinal.client.listener.ForceStopListener;
 import fr.arcanmc.cardinal.client.listener.StartInstanceListener;
+import fr.arcanmc.cardinal.client.listener.StopInstanceListener;
 import fr.arcanmc.cardinal.client.task.GameHealthChecker;
 import fr.arcanmc.cardinal.client.template.TemplateManager;
 import fr.arcanmc.cardinal.core.docker.DockerAccess;
@@ -77,7 +78,7 @@ public class ClientService extends Service {
 
         new ForceStopListener();
         new StartInstanceListener();
-        new StartInstanceListener();
+        new StopInstanceListener();
     }
 
     @Override

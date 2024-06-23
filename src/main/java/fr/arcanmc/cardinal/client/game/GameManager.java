@@ -46,7 +46,6 @@ public class GameManager {
             return;
         }
         Template templateData = templateManager.getTemplate(template);
-        logger.info("Starting game instance for template " + template);
         GameInstance gameInstance = new GameInstance(clientId, template, generateGameId(), ip, getAvailablePort(), host);
         try {
             Process process = Runtime.getRuntime().exec("docker run" +
@@ -73,7 +72,6 @@ public class GameManager {
         bucket.set(gameInstance);
 
         gameInstances.add(gameInstance.getName());
-        logger.info("Game instance Starting for template " + template);
     }
 
     public void stopGameInstance(String serverName) {
