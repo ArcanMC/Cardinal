@@ -64,12 +64,12 @@ public class GameManager {
 
     public GameInstance getGameInstance(String name) {
         fetchInstances();
-        RBucket<GameInstance> gameBucket = redisAccess.getBucket("game:" + name);
+        RBucket<GameInstance> gameBucket = redisAccess.getBucket("gameinstance:" + name);
         return gameBucket.get();
     }
 
     public void updateGameInstance(GameInstance gameInstance) {
-        RBucket<GameInstance> gameBucket = redisAccess.getBucket("game:" + gameInstance.getName());
+        RBucket<GameInstance> gameBucket = redisAccess.getBucket("gameinstance:" + gameInstance.getName());
         gameBucket.set(gameInstance);
     }
 
@@ -83,7 +83,7 @@ public class GameManager {
     }
 
     private void fetchInstances() {
-        Iterable<String> keys = redisAccess.getKeys().getKeysByPattern("game:*");
+        Iterable<String> keys = redisAccess.getKeys().getKeysByPattern("gameinstance:*");
         keys.forEach(key -> {
             RBucket<GameInstance> rBucket = redisAccess.getBucket(key);
             GameInstance serverInstance = rBucket.get();

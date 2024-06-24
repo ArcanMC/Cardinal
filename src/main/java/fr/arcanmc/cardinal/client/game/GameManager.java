@@ -66,7 +66,7 @@ public class GameManager {
         }
         gameInstance.setStatus(ServerStatus.STARTING);
 
-        final String key = "game:" + gameInstance.getId();
+        final String key = "gameinstance:" + gameInstance.getName();
         final RBucket<GameInstance> bucket = redissonClient.getBucket(key);
 
         bucket.set(gameInstance);
@@ -79,7 +79,7 @@ public class GameManager {
             logger.error("Game instance " + serverName + " does not exist");
             return;
         }
-        final String key = "instances:" + serverName;
+        final String key = "gameinstance:" + serverName;
         final RBucket<GameInstance> gameBucket = redissonClient.getBucket(key);
         this.gameInstances.remove(serverName);
         try {
@@ -104,7 +104,7 @@ public class GameManager {
 
     private GameInstance getInstanceFromRedis(String serverName) {
         final RedissonClient redissonClient = RedisAccess.get().getClient();
-        final String key = "instances:" + serverName;
+        final String key = "gameinstance:" + serverName;
         final RBucket<GameInstance> accountRBucket = redissonClient.getBucket(key);
 
         return accountRBucket.get();
