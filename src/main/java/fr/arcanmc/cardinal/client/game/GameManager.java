@@ -1,10 +1,12 @@
 package fr.arcanmc.cardinal.client.game;
 
 import fr.arcanmc.cardinal.Cardinal;
+import fr.arcanmc.cardinal.api.event.events.client.InstanceStopped;
 import fr.arcanmc.cardinal.api.game.GameInstance;
 import fr.arcanmc.cardinal.api.game.ServerStatus;
 import fr.arcanmc.cardinal.api.template.Template;
 import fr.arcanmc.cardinal.client.ClientService;
+import fr.arcanmc.cardinal.client.event.InstanceStoppedEvent;
 import fr.arcanmc.cardinal.client.template.TemplateManager;
 import fr.arcanmc.cardinal.core.console.Logger;
 import fr.arcanmc.cardinal.core.redis.RedisAccess;
@@ -87,6 +89,7 @@ public class GameManager {
         } catch (IOException e) {
             logger.error("Could not stop game instance " + serverName);
         }
+        new InstanceStoppedEvent(new InstanceStopped(serverName)).publish();
         gameBucket.delete();
     }
 
