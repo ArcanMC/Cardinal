@@ -6,7 +6,7 @@ import fr.arcanmc.cardinal.api.scheduller.CardinalTask;
 import fr.arcanmc.cardinal.client.ClientService;
 import fr.arcanmc.cardinal.client.game.GameManager;
 
-public class GameHealthChecker implements CardinalTask {
+public class GameHealthChecker implements Runnable {
 
     GameManager gameManager = ClientService.get().getGameManager();
     ClientService clientService = ClientService.get();

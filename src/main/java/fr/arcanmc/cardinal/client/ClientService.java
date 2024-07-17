@@ -20,6 +20,13 @@ import lombok.Getter;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
+import java.time.Period;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Getter
 public class ClientService extends Service {
@@ -34,6 +41,8 @@ public class ClientService extends Service {
     private int myId = -1;
     private String myName = "anonymous";
 
+    private ScheduledExecutorService scheduler;
+
     @Override
     public String getName() {
         return "Client";
@@ -44,6 +53,8 @@ public class ClientService extends Service {
         instance = this;
 
         this.myIp = getIp();
+
+        scheduler = Executors.newScheduledThreadPool(1);
 
         new DockerAccess();
         DockerAccess.init();
@@ -70,7 +81,7 @@ public class ClientService extends Service {
         this.gameManager = new GameManager();
 
         if (this.getConfig().get("health.autoStop.enabled", Boolean.class))
-            Cardinal.getInstance().getCardinalScheduler().runTaskTimer(new GameHealthChecker(), 0, this.getConfig().get("health.autoStop.period", Integer.class) * 20L);
+            scheduler.scheduleAtFixedRate(new GameHealthChecker(), 0, this.getConfig().get("health.autoStop.period", Integer.class), TimeUnit.SECONDS);
 
         registerCommand(new TemplateCommands());
 
@@ -84,6 +95,8 @@ public class ClientService extends Service {
     @Override
     public void onDisable() {
         this.templateManager.save();
+        List<String> games = new ArrayList<>(this.gameManager.getGameInstances());
+        games.forEach(gameInstance -> gameManager.stopGameInstance(gameInstance));
         new ClientStoppedEvent(new ClientStopped(this.myIp)).publish();
     }
 

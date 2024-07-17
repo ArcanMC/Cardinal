@@ -67,7 +67,7 @@ public class ServerService extends Service {
         new ClientForceStopEvent(new ForceStopClient()).publish();
 
         RedissonClient redissonClient = RedisAccess.get().getClient();
-        Iterable<String> keys = redissonClient.getKeys().getKeysByPattern("game:*");
+        Iterable<String> keys = redissonClient.getKeys().getKeysByPattern("gameinstance:*");
         keys.forEach(key -> {
             RBucket<GameInstance> rBucket = redissonClient.getBucket(key);
             rBucket.delete();
