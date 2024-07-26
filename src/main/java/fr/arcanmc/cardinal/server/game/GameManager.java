@@ -30,7 +30,8 @@ public class GameManager {
         if (client == null) {
             return;
         }
-        new StartInstanceClientEvent(new StartInstanceClient(serverType, client.getId(), amount, (host != null), host)).publish();
+        new StartInstanceClientEvent(
+                new StartInstanceClient(serverType, client.getId(), amount, (host != null), host)).publish();
         fetchInstances();
     }
 
@@ -39,7 +40,8 @@ public class GameManager {
         if (client == null) {
             return;
         }
-        new StartInstanceClientEvent(new StartInstanceClient(serverType, client.getId(), amount, (host != null), host)).publish();
+        new StartInstanceClientEvent(
+                new StartInstanceClient(serverType, client.getId(), amount, (host != null), host)).publish();
         fetchInstances();
     }
 
@@ -86,6 +88,9 @@ public class GameManager {
         Iterable<String> keys = redisAccess.getKeys().getKeysByPattern("gameinstance:*");
         keys.forEach(key -> {
             RBucket<GameInstance> rBucket = redisAccess.getBucket(key);
+            if (rBucket.get() == null) {
+                return;
+            }
             GameInstance serverInstance = rBucket.get();
             if (!isInstanceExist(serverInstance.getName())) {
                 games.add(serverInstance.getName());
