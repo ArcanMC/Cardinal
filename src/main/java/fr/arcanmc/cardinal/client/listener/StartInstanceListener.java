@@ -6,6 +6,7 @@ import fr.arcanmc.cardinal.client.ClientService;
 import fr.arcanmc.cardinal.core.event.EventListener;
 
 public class StartInstanceListener extends EventListener<StartInstanceClient> {
+
     @Override
     public String getName() {
         return "startInstanceClient";
@@ -13,13 +14,17 @@ public class StartInstanceListener extends EventListener<StartInstanceClient> {
 
     @Override
     public void listen(StartInstanceClient object) {
-        if (object.getClientID() == ClientService.get().getMyId()) {
-            Cardinal.getInstance().getLogger().info("Starting instance... [" + object.getType() + "/" + object.getAmount() + "]");
+        ClientService clientService = ClientService.get();
+        if (object.getClientID() == clientService.getMyId()) {
+            String instanceStartMessage = String.format("Starting instance... [%s/%d]", object.getType(),
+                    object.getAmount());
+            Cardinal.getInstance().getLogger().info(instanceStartMessage);
             for (int i = 0; i < object.getAmount(); i++) {
                 try {
-                    ClientService.get().getGameManager().startGameInstance(object.getType(), object.getHost());
+                    clientService.getGameManager().startGameInstance(object.getType(), object.getHost());
                 } catch (RuntimeException e) {
-                    Cardinal.getInstance().getLogger().error("Failed to start game instance!", e);
+                    String errorMessage = "Failed to start game instance!";
+                    Cardinal.getInstance().getLogger().error(errorMessage, e);
                     throw e;
                 }
             }

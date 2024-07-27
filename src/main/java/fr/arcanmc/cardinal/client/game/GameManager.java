@@ -23,6 +23,7 @@ import java.util.*;
 public class GameManager {
 
     private final RedissonClient redissonClient;
+    private static final String GAME_INSTANCE_IDF = "gameinstance:";
     @Getter
     private final Set<String> gameInstances;
     private final Logger logger;
@@ -68,7 +69,7 @@ public class GameManager {
         }
         gameInstance.setStatus(ServerStatus.STARTING);
 
-        final String key = "gameinstance:" + gameInstance.getName();
+        final String key = GAME_INSTANCE_IDF + gameInstance.getName();
         final RBucket<GameInstance> bucket = redissonClient.getBucket(key);
 
         bucket.set(gameInstance);
@@ -81,7 +82,7 @@ public class GameManager {
             logger.error("Game instance " + serverName + " does not exist");
             return;
         }
-        final String key = "gameinstance:" + serverName;
+        final String key = GAME_INSTANCE_IDF + serverName;
         final RBucket<GameInstance> gameBucket = redissonClient.getBucket(key);
         this.gameInstances.remove(serverName);
         try {
@@ -91,6 +92,24 @@ public class GameManager {
         }
         new InstanceStoppedEvent(new InstanceStopped(serverName)).publish();
         gameBucket.delete();
+    }
+
+    private void executeDockerRunCommand(GameInstance gameInstance, Template templateData) throws IOException{
+        Process process = Runtime.getRuntime().exec("docker run" +
+                " -p" + gameInstance.getPort() + ":25565" +
+                " --name " + gameInstance.getName() +
+                " -e SERVERNAME=" + gameInstance.getName() +
+                " -e SERVERTYPE=" + gameInstance.getTemplateName() +
+                " -d " + templateData.getImageId());
+
+        try(BufferedReader bufferedReaderObj = new BufferedReader(new InputStreamReader(process.getInputStream()))){
+            String sLine;
+            StringBuilder output = new StringBuilder();
+
+            while ((sLine = bufferedReaderObj.readLine()) != null) {
+                output.append(sLine);
+            }
+        }
     }
 
     public void closeAll() {
@@ -107,7 +126,7 @@ public class GameManager {
 
     private GameInstance getInstanceFromRedis(String serverName) {
         final RedissonClient redissonClient = RedisAccess.get().getClient();
-        final String key = "gameinstance:" + serverName;
+        final String key = GAME_INSTANCE_IDF + serverName;
         final RBucket<GameInstance> accountRBucket = redissonClient.getBucket(key);
 
         return accountRBucket.get();

@@ -20,6 +20,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * The TemplateManager class is responsible for managing templates.
+ * It provides methods to create, delete, update, and retrieve templates,
+ * as well as check if a template exists and if it has an associated docker image.
+ */
 public class TemplateManager {
 
     @Getter

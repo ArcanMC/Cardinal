@@ -18,14 +18,30 @@ public class GameHealthChecker implements Runnable {
     public void run() {
         gameManager.getGameInstances().forEach(gameInstance -> {
             GameInstance game = gameManager.getInstanceByName(gameInstance);
-            if (game.getStatus().ordinal() < ServerStatus.RUNNING.ordinal() && game.getCreatedAt() != null && game.getCreatedAt().getTime() + instanceNotStartedSince < System.currentTimeMillis()) {
-                game.setStatus(ServerStatus.STOPPING);
-                gameManager.stopGameInstance(game.getName());
-            } else if (game.getStatus().ordinal() >= ServerStatus.RUNNING.ordinal() && game.getCreatedAt() != null && game.getCreatedAt().getTime() + instanceNoPlayersSince < System.currentTimeMillis() && game.getPlayers().isEmpty()) {
-                game.setStatus(ServerStatus.STOPPING);
-                gameManager.stopGameInstance(game.getName());
+            if (isUnstartedGameInstanceEligibleForStopping(game)) {
+                stopGame(game);
+            } else if (isRunningGameInstanceEligibleForStopping(game)) {
+                stopGame(game);
             }
         });
 
+    }
+
+    private boolean isUnstartedGameInstanceEligibleForStopping(GameInstance game){
+        return game.getStatus().ordinal() < ServerStatus.RUNNING.ordinal()
+                && game.getCreatedAt() != null
+                && game.getCreatedAt().getTime() + instanceNotStartedSince < System.currentTimeMillis();
+    }
+
+    private boolean isRunningGameInstanceEligibleForStopping(GameInstance game){
+        return game.getStatus().ordinal() >= ServerStatus.RUNNING.ordinal()
+                && game.getCreatedAt() != null
+                && game.getCreatedAt().getTime() + instanceNoPlayersSince < System.currentTimeMillis()
+                && game.getPlayers().isEmpty();
+    }
+
+    private void stopGame(GameInstance game){
+        game.setStatus(ServerStatus.STOPPING);
+        gameManager.stopGameInstance(game.getName());
     }
 }
